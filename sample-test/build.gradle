@@ -1,9 +1,18 @@
 apply plugin: 'java'
-apply plugin: 'maven-publish'
 
 
 dependencies {
     implementation project(":lancet-base")
+    testImplementation project(":lancet-plugin")
+
+    testImplementation "com.android.tools.build:gradle:$android_tools_version"
+    testImplementation "junit:junit:4.12"
+    testImplementation 'com.squareup.okio:okio:1.11.0'
+    testImplementation 'org.assertj:assertj-core:3.6.2'
+    testImplementation 'org.mockito:mockito-core:2.8.47'
+    testImplementation gradleApi()
+
+
 }
 
 

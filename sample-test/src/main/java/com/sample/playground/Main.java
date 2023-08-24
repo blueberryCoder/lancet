@@ -9,5 +9,6 @@ public class Main{
         CoffeeMaker maker = new CoffeeMaker(heater,punm,box);
         Cup cup = maker.brew(new Cup());
         System.out.println("a "+(cup.isEmpty()?"empty":"full") + " cup of "+cup.getCoffee());
+
     }
 }
