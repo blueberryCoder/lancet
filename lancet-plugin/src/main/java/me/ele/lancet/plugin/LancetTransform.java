@@ -121,6 +121,7 @@ class LancetTransform extends Transform {
         Log.i("now: " + System.currentTimeMillis());
 
         context.getGraph().flow().clear();
+        // collect all class to graph
         TransformInfo transformInfo = parser.parse(context.getHookClasses(), context.getGraph());
 
         Weaver weaver = AsmWeaver.newInstance(transformInfo, context.getGraph());
