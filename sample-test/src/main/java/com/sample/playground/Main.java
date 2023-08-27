@@ -11,4 +11,9 @@ public class Main{
         System.out.println("a "+(cup.isEmpty()?"empty":"full") + " cup of "+cup.getCoffee());
 
     }
+
+//    public static void main(String[] args) {
+//            new MethodInsnNode(Opcodes.INVOKESTATIC,"owner","name","desc",false);
+
+//    }
 }

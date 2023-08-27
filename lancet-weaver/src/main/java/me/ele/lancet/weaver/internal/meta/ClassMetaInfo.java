@@ -22,6 +22,11 @@ public class ClassMetaInfo {
         this.className = className;
     }
 
+    /**
+     * 将hookClasses's hook method 转换成 HookInfoLocator, 并将Origin.Call / This.xxx 转换成自定义的指令，方便后续替换。
+     * @param nodeMap
+     * @return
+     */
     public List<HookInfoLocator> toLocators(Graph nodeMap) {
         return methods.stream()
                 .map(m -> {
@@ -39,7 +44,7 @@ public class ClassMetaInfo {
                         i.accept(locator);
                     });
 
-                    if (locator.satisfied()) {
+                    if (locator.satisfied()) { // insert / proxy 需要将Origin.xxx ,This.xx 进行指令替换
                         locator.transformNode();
                     }
                     return locator;

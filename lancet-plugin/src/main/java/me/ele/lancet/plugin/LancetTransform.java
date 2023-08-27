@@ -125,6 +125,7 @@ class LancetTransform extends Transform {
         TransformInfo transformInfo = parser.parse(context.getHookClasses(), context.getGraph());
 
         Weaver weaver = AsmWeaver.newInstance(transformInfo, context.getGraph());
+        // 开始织入
         new ContextReader(context).accept(incremental, new TransformProcessor(context, weaver));
         Log.i("build successfully done");
         Log.i("now: " + System.currentTimeMillis());

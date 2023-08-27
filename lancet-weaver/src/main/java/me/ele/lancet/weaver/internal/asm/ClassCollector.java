@@ -47,6 +47,7 @@ public class ClassCollector {
         ClassWriter writer = mClassWriters.get(classSimpleName);
         if (writer == null) { // inner class visitor . 创建innerClass Write，用于输出内部类的实现
             writer = new ClassWriter(ClassWriter.COMPUTE_MAXS);
+            // 生成构造方法
             initForWriter(writer, classSimpleName);
             mClassWriters.put(classSimpleName, writer);
         }

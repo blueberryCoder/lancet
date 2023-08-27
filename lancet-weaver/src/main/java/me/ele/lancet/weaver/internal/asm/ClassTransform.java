@@ -19,19 +19,21 @@ public class ClassTransform {
     public static final String AID_INNER_CLASS_NAME = "_lancet";
 
     public static ClassData[] weave(TransformInfo transformInfo, Graph graph, byte[] classByte, String internalName) {
+
         ClassCollector classCollector = new ClassCollector(new ClassReader(classByte), graph);
-
         classCollector.setOriginClassName(internalName);
-
+        // MethodChain与要织入的class是1:1关系
         MethodChain chain = new MethodChain(internalName, classCollector.getOriginClassVisitor(), graph);
+        // ClassContext 与要织入的class是1:1关系
         ClassContext context = new ClassContext(graph, chain, classCollector.getOriginClassVisitor());
-
+        // ClassTransform与要织入的class是1:1关系
         ClassTransform transform = new ClassTransform(classCollector, context);
-        transform.connect(new HookClassVisitor(transformInfo.hookClasses));
-        transform.connect(new ProxyClassVisitor(transformInfo.proxyInfo));
-        transform.connect(new InsertClassVisitor(transformInfo.executeInfo));
-        transform.connect(new TryCatchInfoClassVisitor(transformInfo.tryCatchInfo));
+        transform.connect(new HookClassVisitor(transformInfo.hookClasses)); // 跳过HookClass && 获得class的一些基本信息
+        transform.connect(new ProxyClassVisitor(transformInfo.proxyInfo));  // 处理 Proxy
+        transform.connect(new InsertClassVisitor(transformInfo.executeInfo)); //  处理 Insert
+        transform.connect(new TryCatchInfoClassVisitor(transformInfo.tryCatchInfo)); // 处理TryCatch
         transform.startTransform();
+        // 得到完成织入的字节码
         return classCollector.generateClassBytes();
     }
 

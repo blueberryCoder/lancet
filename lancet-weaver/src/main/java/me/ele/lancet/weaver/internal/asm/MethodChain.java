@@ -82,17 +82,25 @@ public class MethodChain {
     }
 
 
+    /**
+     * @param className
+     * @param access
+     * @param name
+     * @param desc
+     * @param node  hoookClass's method
+     * @param cv
+     */
     public void next(String className, int access, String name, String desc, MethodNode node, ClassVisitor cv) {
         String[] exs = (String[]) node.exceptions.toArray(new String[0]);
         head.createIfNeed(base, bitset, exs);
-
+        // 创建inner class中的method eg: me_ele_lancet_testcase_proxy_ProxyStaticTest$HookClass_addSugar
         MethodVisitor mv = cv.visitMethod(access, name, desc, null, exs);
         node.accept(new MethodVisitor(Opcodes.ASM6, new AutoUnboxMethodVisitor(mv)) {
 
             @Override
             public void visitMethodInsn(int opcode, String owner, String name, String desc, boolean itf) {
                 if (opcode == AopMethodAdjuster.OP_CALL) {
-                    head.loadArgsAndInvoke(mv);
+                    head.loadArgsAndInvoke(mv); // 替换成原指令
                 } else if (opcode == AopMethodAdjuster.OP_THIS_GET_FIELD) {
                     dealField(Opcodes.GETFIELD, name, mv);
                 } else if (opcode == AopMethodAdjuster.OP_THIS_PUT_FIELD) {
@@ -111,7 +119,7 @@ public class MethodChain {
             }
 
         });
-
+        // 生成Invoker, 调用生成lancet method的指令
         headFromInsert(access, className, name, desc);
     }
 
@@ -189,6 +197,7 @@ public class MethodChain {
 
         final String staticDesc;
         final String owner;
+        // 是否应该创建synthetic方法
         final boolean needCreate;
 
         MethodInsnNode syntheticNode;
@@ -205,7 +214,7 @@ public class MethodChain {
             if (syntheticNode != null) {
                 throw new IllegalStateException("can't create more than once");
             }
-            if (needCreate) {
+            if (needCreate) { // 如果需要创建synthetic方法
                 String name = String.format(FORMAT, bitset.consume());
 
                 syntheticNode = new MethodInsnNode(INVOKESTATIC, owner, name, staticDesc, false);
@@ -257,7 +266,7 @@ public class MethodChain {
 
         public AbstractInsnNode action() {
             if (syntheticNode != null) {
-                return syntheticNode;
+                return syntheticNode; // 访问外部类创建的synthetic方法
             } else if (mn != null) {
                 return mn;
             } else {

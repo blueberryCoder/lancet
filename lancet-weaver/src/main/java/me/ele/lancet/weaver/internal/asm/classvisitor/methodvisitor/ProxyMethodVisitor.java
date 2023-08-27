@@ -49,13 +49,13 @@ public class ProxyMethodVisitor extends MethodVisitor {
             String staticDesc = TypeUtil.descToStatic(opcode == Opcodes.INVOKESTATIC ? Opcodes.ACC_STATIC : 0, desc, owner);
             // begin hook this code.
             chain.headFromProxy(opcode, owner, name, desc);
-
+            // get inner class name
             String artificialClassname = classCollector.getCanonicalName(ClassTransform.AID_INNER_CLASS_NAME);
             ClassVisitor cv = classCollector.getInnerClassVisitor(ClassTransform.AID_INNER_CLASS_NAME);
 
             Log.tag("transform").i("start weave Call method " + " for " + owner + "." + name + desc +
                     " in " + className + "." + this.name);
-
+            // for each means support multi proxy.
             infos.forEach(c -> { // sourceMethod 是hookClass的method
                 if (TypeUtil.isStatic(c.sourceMethod.access) != (opcode == Opcodes.INVOKESTATIC)) {
                     throw new IllegalStateException(c.sourceClass + "." + c.sourceMethod.name + " should have the same " +
@@ -63,7 +63,7 @@ public class ProxyMethodVisitor extends MethodVisitor {
                 }
                 Log.tag("transform").i(
                         " from " + c.sourceClass + "." + c.sourceMethod.name);
-
+                // get inner class method name.
                 String methodName = c.sourceClass.replace("/", "_") + "_" + c.sourceMethod.name;
                 // artificialClassName 需要生成的内部类的名称
                 // 生成内部类方法
@@ -71,7 +71,7 @@ public class ProxyMethodVisitor extends MethodVisitor {
             });
 
             invokerMap.put(key, chain.getHead());
-            // 替换调用指令
+            // 将原本的调用指令替换成生成的lancet指令
             chain.getHead().invoke(mv);
         } else {
             super.visitMethodInsn(opcode, owner, name, desc, itf);
