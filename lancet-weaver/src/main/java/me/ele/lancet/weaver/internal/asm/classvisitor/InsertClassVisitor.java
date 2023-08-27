@@ -32,7 +32,6 @@ public class InsertClassVisitor extends LinkedClassVisitor {
         matched = executeInfos.get(getContext().name);
     }
 
-
     @Override
     public MethodVisitor visitMethod(int access, String name, String desc, String signature, String[] exceptions) {
         if (matched != null) {
@@ -55,6 +54,7 @@ public class InsertClassVisitor extends LinkedClassVisitor {
                 String staticDesc = TypeUtil.descToStatic(access, desc, getContext().name);
                 ClassVisitor cv = getClassCollector().getInnerClassVisitor(ClassTransform.AID_INNER_CLASS_NAME);
                 String owner = getClassCollector().getCanonicalName(ClassTransform.AID_INNER_CLASS_NAME);
+
                 String newName = name + "$___twin___";
                 int newAccess = (access & ~(Opcodes.ACC_PROTECTED | Opcodes.ACC_PUBLIC)) | Opcodes.ACC_PRIVATE;
 
@@ -65,8 +65,11 @@ public class InsertClassVisitor extends LinkedClassVisitor {
                     Log.tag("transform").i(
                             " from " + e.sourceClass + "." + e.sourceMethod.name);
                     String methodName = e.sourceClass.replace("/", "_") + "_" + e.sourceMethod.name;
+
+                    // 生成lancet method，并生成调用指令Invoker
                     chain.next(owner, Opcodes.ACC_STATIC, methodName, staticDesc, e.threadLocalNode(), cv);
                 });
+                // 根据当前方法的签名，生成同签名函数，它的内容只是调用一下之前生成的lancet method (上次保留的header是个Invoker)
                 chain.fakePreMethod(getContext().name, access, name, desc, signature, exceptions);
 
                 return super.visitMethod(newAccess, newName, desc, signature, exceptions);
@@ -80,7 +83,7 @@ public class InsertClassVisitor extends LinkedClassVisitor {
         if (matched != null && matched.size() > 0) {
             new ArrayList<>(matched).stream()
                     .collect(Collectors.groupingBy(e -> e.targetMethod)).forEach((k, v) -> {
-                if (v.stream().anyMatch(e -> e.createSuper)) {
+                if (v.stream().anyMatch(e -> e.createSuper)) { // 如果创建调用supper, 在所有匹配到的方法中，插入super指令
                     InsertInfo e = v.get(0);
                     MethodVisitor mv = visitMethod(e.sourceMethod.access, e.targetMethod, e.targetDesc, e.sourceMethod.signature,
                             (String[]) e.sourceMethod.exceptions.toArray(new String[0]));

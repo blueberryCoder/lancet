@@ -64,7 +64,7 @@ class LancetTransform extends Transform {
 
 
     @Override
-    public Set<QualifiedContent.Scope> getScopes() {
+    public Set<QualifiedContent.ScopeType> getScopes() {
         return TransformManager.SCOPE_FULL_PROJECT;
     }
 
@@ -121,9 +121,11 @@ class LancetTransform extends Transform {
         Log.i("now: " + System.currentTimeMillis());
 
         context.getGraph().flow().clear();
+        // collect all class to graph
         TransformInfo transformInfo = parser.parse(context.getHookClasses(), context.getGraph());
 
         Weaver weaver = AsmWeaver.newInstance(transformInfo, context.getGraph());
+        // 开始织入
         new ContextReader(context).accept(incremental, new TransformProcessor(context, weaver));
         Log.i("build successfully done");
         Log.i("now: " + System.currentTimeMillis());

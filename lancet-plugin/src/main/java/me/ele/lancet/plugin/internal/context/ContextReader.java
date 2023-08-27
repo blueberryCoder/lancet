@@ -97,11 +97,12 @@ public class ContextReader {
      * @return
      */
     private Collection<? extends JarInput> changedToDeleteAndAdd(){
-        List<JarInput> jarInputs = new ArrayList<>();
-        context.getChangedJars().stream()
-                .peek(c -> jarInputs.add(new StatusOverrideJarInput(context,c, Status.REMOVED)))
-                .peek(c -> jarInputs.add(new StatusOverrideJarInput(context,c, Status.ADDED)));
-        return jarInputs;
+//        List<JarInput> jarInputs = new ArrayList<>();
+//        context.getChangedJars().stream()
+//                .peek(c -> jarInputs.add(new StatusOverrideJarInput(context,c, Status.REMOVED)))
+//                .peek(c -> jarInputs.add(new StatusOverrideJarInput(context,c, Status.ADDED)));
+//        return jarInputs;
+        return context.getChangedJars();
     }
 
 

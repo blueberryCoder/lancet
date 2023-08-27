@@ -97,6 +97,9 @@ public class TransformContext {
         return Collections.unmodifiableCollection(removedJars);
     }
 
+    /**
+     * target file path
+     */
     public File getRelativeFile(QualifiedContent content) {
         return invocation.getOutputProvider().getContentLocation(content.getName(), content.getContentTypes(), content.getScopes(),
                 (content instanceof JarInput ? Format.JAR : Format.DIRECTORY));

@@ -101,7 +101,7 @@ public class PreClassAnalysis {
         } else {
             cache.saveFully(graph.toLocalNodes(), preAnalysisClassFetcher.hookClasses, preAnalysisClassFetcher.hookClassesInDir, new ArrayList<>(preAnalysisClassFetcher.jarPathOfHookClasses));
         }
-
+        // 建立类图
         context.setGraph(graph.generate());
         context.setHookClasses(cache.hookClasses());
     }

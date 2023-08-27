@@ -62,6 +62,12 @@ public class AsmMetaParser implements MetaParser {
         this.loader = loader;
     }
 
+    /**
+     * 将hook信息解析出来，并完成指令替换，最终封装到TransformInfo中。
+     * @param hookClasses
+     * @param graph
+     * @return
+     */
     @Override
     public TransformInfo parse(List<String> hookClasses, Graph graph) {
         Log.i("aop classes: \n" + hookClasses.stream().collect(Collectors.joining("\n")));

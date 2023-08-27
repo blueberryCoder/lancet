@@ -35,6 +35,7 @@ public class TryCatchMethodVisitor extends MethodVisitor {
         super.visitLabel(label);
         if (label != null && handlers.contains(label)) {
             for (TryCatchInfo info : matches) {
+                // 直接调用对hookClass中定义的函数
                 mv.visitMethodInsn(Opcodes.INVOKESTATIC, info.myClass, info.myMethod, info.methodDescriptor, false);
             }
         }
